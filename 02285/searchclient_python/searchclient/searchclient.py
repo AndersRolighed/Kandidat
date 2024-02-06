@@ -53,6 +53,9 @@ class SearchClient:
             line = server_messages.readline()
 
         num_agents = 0
+        num_boxes = 0
+        num_walls = 0
+        
         agent_rows = [None for _ in range(10)]
         agent_cols = [None for _ in range(10)]
         walls = [[False for _ in range(num_cols)] for _ in range(num_rows)]
@@ -66,8 +69,10 @@ class SearchClient:
                     num_agents += 1
                 elif 'A' <= c <= 'Z':
                     boxes[row][col] = c
+                    num_boxes += 1
                 elif c == '+':
                     walls[row][col] = True
+                    num_walls += 1
             
             row += 1
         del agent_rows[num_agents:]
@@ -88,6 +93,8 @@ class SearchClient:
         
         # End.
         # line is currently "#end".
+        State.num_objects = num_agents + num_boxes
+        State.num_spaces = num_cols * num_rows - num_walls
         
         State.agent_colors = agent_colors
         State.walls = walls

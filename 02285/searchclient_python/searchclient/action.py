@@ -4,6 +4,8 @@ from enum import Enum, unique
 class ActionType(Enum):
     NoOp = 0
     Move = 1
+    Push = 2
+    Pull = 3
 
 @unique
 class Action(Enum):
@@ -25,6 +27,39 @@ class Action(Enum):
     MoveS = ("Move(S)", ActionType.Move, 1, 0, 0, 0)
     MoveE = ("Move(E)", ActionType.Move, 0, 1, 0, 0)
     MoveW = ("Move(W)", ActionType.Move, 0, -1, 0, 0)
+    
+    PushN_N = ("Push(N,N)", ActionType.Push, -1, 0, -1, 0)
+    PushW_N = ("Push(W,N)", ActionType.Push, 0, -1, -1, 0)
+    PushE_N = ("Push(E,N)", ActionType.Push, 0,  1, -1, 0)
+    
+    PushS_S = ("Push(S,S)", ActionType.Push, 1,  0, 1, 0)
+    PushW_S = ("Push(W,S)", ActionType.Push, 0, -1, 1, 0)
+    PushE_S = ("Push(E,S)", ActionType.Push, 0,  1, 1, 0)
+    
+    PushN_W = ("Push(N,W)", ActionType.Push, -1, 0, 0, -1)
+    PushS_W = ("Push(S,W)", ActionType.Push, 1,  0, 0, -1)
+    PushW_W = ("Push(W,W)", ActionType.Push, 0, -1, 0, -1)
+    
+    PushN_E = ("Push(N,E)", ActionType.Push, -1, 0, 0, 1)
+    PushS_E = ("Push(S,E)", ActionType.Push, 1,  0, 0, 1)
+    PushE_E = ("Push(E,E)", ActionType.Push, 0,  1, 0, 1)
+    
+    
+    PullN_N = ("Pull(N,N)", ActionType.Pull, -1, 0, -1, 0)
+    PullW_N = ("Pull(W,N)", ActionType.Pull, 0, -1, -1, 0)
+    PullE_N = ("Pull(E,N)", ActionType.Pull, 0,  1, -1, 0)
+    
+    PullS_S = ("Pull(S,S)", ActionType.Pull, 1,  0, 1, 0)
+    PullW_S = ("Pull(W,S)", ActionType.Pull, 0, -1, 1, 0)
+    PullE_S = ("Pull(E,S)", ActionType.Pull, 0,  1, 1, 0)
+    
+    PullN_W = ("Pull(N,W)", ActionType.Pull, -1, 0, 0, -1)
+    PullS_W = ("Pull(S,W)", ActionType.Pull, 1,  0, 0, -1)
+    PullW_W = ("Pull(W,W)", ActionType.Pull, 0, -1, 0, -1)
+    
+    PullN_E = ("Pull(N,E)", ActionType.Pull, -1, 0, 0, 1)
+    PullS_E = ("Pull(S,E)", ActionType.Pull, 1,  0, 0, 1)
+    PullE_E = ("Pull(E,E)", ActionType.Pull, 0,  1, 0, 1)
     
     def __init__(self, name, type, ard, acd, brd, bcd):
         self.name_ = name

@@ -53,6 +53,32 @@ class State:
                 copy_agent_rows[agent] += action.agent_row_delta
                 copy_agent_cols[agent] += action.agent_col_delta
             
+            elif action.type is ActionType.Push:
+                copy_agent_rows[agent] += action.agent_row_delta
+                copy_agent_cols[agent] += action.agent_col_delta
+                
+                box_row = copy_agent_rows[agent]
+                box_col = copy_agent_cols[agent]
+                
+                box_dest_row = box_row + action.box_row_delta
+                box_dest_col = box_col + action.box_col_delta
+                
+                copy_boxes[box_dest_row][box_dest_col] = copy_boxes[box_row][box_col]
+                copy_boxes[box_row][box_col] = ''
+            
+            elif action.type is ActionType.Pull:
+                box_dest_row = copy_agent_rows[agent]
+                box_dest_col = copy_agent_cols[agent]
+                
+                box_row = box_dest_row - action.box_row_delta
+                box_col = box_dest_col - action.box_col_delta
+                
+                copy_agent_rows[agent] += action.agent_row_delta
+                copy_agent_cols[agent] += action.agent_col_delta
+                
+                copy_boxes[box_dest_row][box_dest_col] = copy_boxes[box_row][box_col]
+                copy_boxes[box_row][box_col] = ''
+                
         copy_state = State(copy_agent_rows, copy_agent_cols, copy_boxes)
         
         copy_state.parent = self
@@ -87,7 +113,7 @@ class State:
                 joint_action[agent] = applicable_actions[agent][actions_permutation[agent]]
             
             if not self.is_conflicting(joint_action):
-                expanded_states.append(self.apply_action(joint_action))
+                expanded_states.append(self.result(joint_action))
             
             # Advance permutation.
             done = False
@@ -119,6 +145,24 @@ class State:
             destination_row = agent_row + action.agent_row_delta
             destination_col = agent_col + action.agent_col_delta
             return self.is_free(destination_row, destination_col)
+        
+        elif action.type is ActionType.Push:
+            box_row = agent_row + action.agent_row_delta
+            box_col = agent_col + action.agent_col_delta
+            
+            destination_row = box_row + action.box_row_delta
+            destination_col = box_col + action.box_col_delta
+            
+            return self.is_moveable_box(box_row, box_col, agent_color) and self.is_free(destination_row, destination_col)
+        
+        elif action.type is ActionType.Pull:
+            box_row = agent_row - action.box_row_delta
+            box_col = agent_col - action.box_col_delta
+            
+            destination_row = agent_row + action.agent_row_delta
+            destination_col = agent_col + action.agent_col_delta
+            
+            return self.is_moveable_box(box_row, box_col, agent_color) and self.is_free(destination_row, destination_col)
                 
     def is_conflicting(self, joint_action: '[Action, ...]') -> 'bool':
         num_agents = len(self.agent_rows)
@@ -142,6 +186,8 @@ class State:
                 destination_cols[agent] = agent_col + action.agent_col_delta
                 box_rows[agent] = agent_row # Distinct dummy value.
                 box_cols[agent] = agent_col # Distinct dummy value.
+            
+            ##TODO: implement push pull
                     
         for a1 in range(num_agents):
             if joint_action[a1] is Action.NoOp:
@@ -159,6 +205,10 @@ class State:
     
     def is_free(self, row: 'int', col: 'int') -> 'bool':
         return not State.walls[row][col] and self.boxes[row][col] == '' and self.agent_at(row, col) is None
+    
+    def is_moveable_box(self, row: 'int', col: 'int', color: 'Color') -> 'bool':
+        box = self.boxes[row][col]
+        return box != '' and State.box_colors[ord(box) - ord('A')] == color
     
     def agent_at(self, row: 'int', col: 'int') -> 'char':
         for agent in range(len(self.agent_rows)):
@@ -206,7 +256,7 @@ class State:
             line = []
             for col in range(len(self.boxes[row])):
                 if self.boxes[row][col] != '': line.append(self.boxes[row][col])
-                elif State.walls[row][col] is not None: line.append('+')
+                elif State.walls[row][col]: line.append('+')
                 elif self.agent_at(row, col) is not None: line.append(self.agent_at(row, col))
                 else: line.append(' ')
             lines.append(''.join(line))

@@ -15,7 +15,7 @@ class Frontier(metaclass=ABCMeta):
     def size(self) -> 'int': raise NotImplementedError
     
     @abstractmethod
-    def contains(self, state: 'State') -> 'bool': raise NotImplementedError
+    def __contains__(self, state: 'State') -> 'bool': raise NotImplementedError
     
     @abstractmethod
     def get_name(self): raise NotImplementedError
@@ -41,7 +41,7 @@ class FrontierBFS(Frontier):
     def size(self) -> 'int':
         return len(self.queue)
     
-    def contains(self, state: 'State') -> 'bool':
+    def __contains__(self, state: 'State') -> 'bool':
         return state in self.set
     
     def get_name(self):
@@ -64,7 +64,7 @@ class FrontierDFS(Frontier):
     def size(self) -> 'int':
         raise NotImplementedError
     
-    def contains(self, state: 'State') -> 'bool':
+    def __contains__(self, state: 'State') -> 'bool':
         raise NotImplementedError
     
     def get_name(self):
@@ -88,7 +88,7 @@ class FrontierBestFirst(Frontier):
     def size(self) -> 'int':
         raise NotImplementedError
     
-    def contains(self, state: 'State') -> 'bool':
+    def __contains__(self, state: 'State') -> 'bool':
         raise NotImplementedError
     
     def get_name(self):
