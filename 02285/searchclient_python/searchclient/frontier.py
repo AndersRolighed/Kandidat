@@ -50,22 +50,26 @@ class FrontierBFS(Frontier):
 class FrontierDFS(Frontier):
     def __init__(self):
         super().__init__()
-        raise NotImplementedError
+        self.queue = deque()
+        self.set = set()
     
     def add(self, state: 'State'):
-        raise NotImplementedError
+        self.queue.append(state)
+        self.set.add(state)
     
     def pop(self) -> 'State':
-        raise NotImplementedError
+        state = self.queue.pop()
+        self.set.remove(state)
+        return state
     
     def is_empty(self) -> 'bool':
-        raise NotImplementedError
+        return len(self.queue) == 0
     
     def size(self) -> 'int':
-        raise NotImplementedError
+        return len(self.queue)
     
     def __contains__(self, state: 'State') -> 'bool':
-        raise NotImplementedError
+        return state in self.set
     
     def get_name(self):
         return 'depth-first search'

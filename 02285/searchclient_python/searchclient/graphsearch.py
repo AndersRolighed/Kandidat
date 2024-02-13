@@ -52,9 +52,6 @@ def search(initial_state : 'State', frontier : 'Frontier'):
 
         while not frontier.is_empty():
 
-            iterations += 1
-            if iterations % 1000 == 0:
-                print_search_status(explored, frontier)
 
             if memory.get_usage() > memory.max_usage:
                 print_search_status(explored, frontier)
@@ -71,7 +68,9 @@ def search(initial_state : 'State', frontier : 'Frontier'):
             for state in chosen.get_expanded_states():
                 if state not in explored and state not in frontier:
                     frontier.add(state)
-        
+                    iterations += 1
+                    if iterations % 1000 == 0:
+                        print_search_status(explored, frontier)
 
 def print_search_status(explored, frontier):
     status_template = '#Expanded: {:8,}, #Frontier: {:8,}, #Generated: {:8,}, Time: {:3.3f} s\n[Alloc: {:4.2f} MB, MaxAlloc: {:4.2f} MB]\nProblem space explored: {:3.1f}%\n'
